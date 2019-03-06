@@ -13,6 +13,7 @@
 #include"helper.h"
 
 #define MODE "w"
+#define IP "192.168.4.159"
 
 int main() 
 {    
@@ -75,13 +76,13 @@ int main()
         struct tcphdr *tcp = (struct tcphdr*)( buffer + sizeof(*ip) + sizeof(*eth));
 
 
-	    if( strcmp(inet_ntoa(source.sin_addr),"192.168.4.159") == 0 && tcp -> fin )
+	    if( strcmp(inet_ntoa(source.sin_addr),IP) == 0 && tcp -> fin )
         {
             break;
         }
 
 
-	    if( strcmp(inet_ntoa(dest.sin_addr),"192.168.4.159") == 0 )
+	    if( strcmp(inet_ntoa(dest.sin_addr),IP) == 0 )
 	    {
 
 
@@ -101,14 +102,13 @@ int main()
                 if(!header_found)
                 {
 
-
-
-                    header_portion = (unsigned char*) realloc(header_portion, strlen(header_portion) + 65536 * sizeof(unsigned char));
-
                     tmp = strstr(data,"\r\n\r\n");
 
+
+                    header_portion = (unsigned char*) realloc(header_portion, header_len + (tmp + 3 - data) );
+                    
                     if(tmp != NULL)
-                    {
+                    {    
                         tmp[2] = '\0';
 
                         tmp = tmp + 4;
@@ -127,7 +127,7 @@ int main()
 
                         len = len - strlen(data) - 2;
 
-
+                        body_portion = (unsigned char*) realloc(body_portion, body_len + len );
                         
                         for( i = 0 ; i < len ; i++)
                         {
@@ -158,8 +158,7 @@ int main()
                     }
 
 
-                    body_portion = (unsigned char *) realloc(body_portion, strlen(body_portion) + 65536  * sizeof(unsigned char));
-        
+                    body_portion = (unsigned char *) realloc(body_portion, body_len + len );
 
                     for( i = 0 ; i < len ; i++)
                     {
@@ -187,7 +186,7 @@ int main()
 
 
 
-    //printf("%d\n",data.num_form_fields);
+    printf("%d\n",data.num_form_fields);
 
     for(i = 0 ; i < data.num_form_fields ; i++)
     {

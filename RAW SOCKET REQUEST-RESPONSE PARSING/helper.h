@@ -11,14 +11,15 @@
 
 */
 
-
+// storing header fields as key value pairs
 struct header_fields{
 
-    unsigned char **keys;
+    unsigned char **keys; 
     unsigned char **values;
     int num_headers;
 };
 
+// storing each form field e.g.- name, email
 struct form_field{
 
     unsigned char *name;
@@ -28,6 +29,7 @@ struct form_field{
     int length;
 };
 
+// storing the whole form
 struct form_data{
 
     struct form_field *f;
@@ -42,6 +44,7 @@ void error(char *msg)
 }
 
 
+// For initializing the raw socket
 int create_raw_socket(char *interface, unsigned char protocol)
 {
     int sock = socket(AF_PACKET, SOCK_RAW, htons(protocol));
@@ -84,6 +87,7 @@ int create_raw_socket(char *interface, unsigned char protocol)
 }
 
 
+// For a given header_field string it will output the corresponding value e.g.- For Content-Type it will output text/html.
 char* get_header_value(char *searchkey, struct header_fields *http_hdr)
 {
     
@@ -100,7 +104,6 @@ char* get_header_value(char *searchkey, struct header_fields *http_hdr)
     
     return NULL;
 }
-
 
 
 
@@ -274,11 +277,6 @@ void extract_form_fields(char* header_portion,int header_len,char *body_portion,
     free(http_hdr.values);
 
 
-
-  //  printf("\n##############################################\n");
-  //  printf("Name    : %s\n",form_data[2].name);
-  //  printf("Filename: %s\n",form_data[2].filename);
-  //  printf("%s\n",form_data[2].value);
 
     f -> f = form_data;
     f -> num_form_fields = i;

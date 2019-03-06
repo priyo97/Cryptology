@@ -15,7 +15,7 @@
 
 
 #define FILENAME "a.png"
-#define MODE "wb"
+#define MODE "w"
 
 int main() 
 {    
@@ -38,12 +38,6 @@ int main()
     unsigned char *tmp, *header_portion, *body_portion;
 
     
-
-
-    header_portion = (unsigned char*) malloc(65536 * sizeof(unsigned char));
-
-    body_portion = (unsigned char*) malloc(65536 * sizeof(unsigned char));
-
     header_len = body_len = 0;
 	
 
@@ -78,11 +72,10 @@ int main()
 
 
 
-
-	    if( strcmp(inet_ntoa(source.sin_addr),"52.85.219.143") == 0 || 
-            strcmp(inet_ntoa(source.sin_addr),"52.85.219.120") == 0 || 
-            strcmp(inet_ntoa(source.sin_addr),"52.85.219.161") == 0 ||
-            strcmp(inet_ntoa(source.sin_addr),"52.85.219.88") == 0 )
+	    if( strcmp(inet_ntoa(source.sin_addr),"54.192.216.30") == 0 || 
+            strcmp(inet_ntoa(source.sin_addr),"54.192.216.20") == 0 || 
+            strcmp(inet_ntoa(source.sin_addr),"54.192.216.56") == 0 ||
+            strcmp(inet_ntoa(source.sin_addr),"54.192.216.215") == 0 )
 	    {
 		    
             struct tcphdr *tcp = (struct tcphdr*)( buffer + sizeof(*ip) + sizeof(*eth));
@@ -103,20 +96,18 @@ int main()
 
                 if(!header_found)
                 {
-
-
-
-                    header_portion = (unsigned char*) realloc(header_portion, strlen(header_portion) + 65536 * sizeof(unsigned char));
-
                     tmp = strstr(data,"\r\n\r\n");
 
                     if(tmp != NULL)
                     {
+                        
+                        header_portion = (unsigned char*) realloc(header_portion, header_len + (tmp + 3 - data) );
+                        
                         tmp[2] = '\0';
 
                         tmp = tmp + 4;
 
-        
+    
 
                         strcpy(header_portion + header_len, data);
 
@@ -130,7 +121,7 @@ int main()
 
                         len = len - strlen(data) - 2;
 
-
+                        body_portion = (unsigned char*) realloc( body_portion, body_len + len );
                         
                         for( i = 0 ; i < len ; i++)
                         {
@@ -144,6 +135,8 @@ int main()
                     }
                     else
                     {
+
+                        header_portion = (unsigned char*) realloc(header_portion, header_len + (tmp - data + 3) );
                         strcpy(header_portion + header_len, data);
                         header_len += strlen(data);
                     }            
@@ -161,7 +154,7 @@ int main()
                     }
 
 
-                    body_portion = (unsigned char *) realloc(body_portion, strlen(body_portion) + 65536  * sizeof(unsigned char));
+                    body_portion = (unsigned char *) realloc( body_portion, body_len + len );
         
 
                     for( i = 0 ; i < len ; i++)
@@ -180,7 +173,7 @@ int main()
     }
 
 
-    printf("\nHeader-length: %d\n",header_len);
+    printf("\nHeader-length: %d bytes\n",header_len);
 
 
     struct header_fields http_hdr;
@@ -195,7 +188,7 @@ int main()
 
     printf("Content-type --->%s\n", tmp);
 
-    printf("\nBody-length: %d\n",body_len);
+    printf("\nBody-length: %d bytes\n",body_len);
 
 //  printf("Body-portion: \n%s\n",body_portion);
 
@@ -229,8 +222,6 @@ int main()
 
     free(http_hdr.keys);
     free(http_hdr.values);
-
-	//shutdown(sock,2);
 
     close(sock);
 }
