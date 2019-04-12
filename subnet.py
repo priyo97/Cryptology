@@ -1,3 +1,9 @@
+'''
+Description: This program checks whether a given IP belongs to a given subnet.
+USAGE: python3 subnet.py [IP_ADDRESS] [SUBNET_IN_CIDR_FORM]
+e.g.-   python3 subnet.py 192.168.70.10 192.168.70.0/24
+        python3 subnet.py 172.142.3.2 172.1.0.0/10
+'''
 import sys
 
 def inet_aton_v4(ipstr):
