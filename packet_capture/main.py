@@ -44,7 +44,10 @@ def capture_packet(iface, n_pkts):
 def main(argv):
 
     ETH_HEADER_LEN = 14
-    ETH_P_IP = "0x0800"
+    ETH_P_IP       = "0x0800"
+    TCP_PROTO      = 6
+    UDP_PROTO      = 17
+    ICMP_PROTO     = 1
 
     raw_pkt_list = capture_packet(iface=argv[0], n_pkts=int(argv[1]))
     
@@ -71,7 +74,7 @@ def main(argv):
                 calculate_l3_checksum(buf[ETH_HEADER_LEN:], pkt_details["l3"]["total_ip_header_len"])
 
             # OSI Model Layer 4
-            if pkt_details["l3"]["l4_protocol"] in {1, 6, 17}:
+            if pkt_details["l3"]["l4_protocol"] in {TCP_PROTO, UDP_PROTO, ICMP_PROTO}:
         
                 get_l4_headers( buf[ETH_HEADER_LEN + pkt_details["l3"]["total_ip_header_len"]:], 
                                 pkt_details, 
