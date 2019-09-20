@@ -1,3 +1,12 @@
+'''
+Reason for using timeout:
+    The socket list for p2s and c2p grows dynamically. Initially the p2s list was containing only the server_socket
+    which sends it into continuous waiting if timeout is not used. In the c2p and p2s list, there is only the server_socket, 
+    because of which both went into waiting state. As soon as first conn came, the c2p function went for processing while 
+    the p2s function ignored it and went to the next interation with the same p2s list containing only the server_socket. 
+    c2p function did the processing and added a new proxy_to_server socket on the p2s list, but unfortunately the select 
+    function was in waiting state with an outdated list, because of which the indefinite wait was there.
+'''
 import sys
 import time
 import socket
