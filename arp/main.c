@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <linux/if_ether.h>
 #include "arp.h"
 
-#define INTERFACE_NAME "eth2"
+#define INTERFACE_NAME "wlp1s0"
 
 int main()
 {
@@ -19,9 +18,9 @@ int main()
     
     arph l3;
 
-    unsigned char src_ip[] = {192, 168, 90, 10};
+    unsigned char src_ip[] = {172, 11, 13, 66};
 
-    unsigned char dst_ip[] = {192, 168, 90, 20};
+    unsigned char dst_ip[] = {172, 11, 12, 184};
 
     l3 = generate_l3_header(l2, src_ip, dst_ip);
 
@@ -40,11 +39,17 @@ int main()
     /* Recv ARP reply packet */
     packet = malloc(100);
 
-    memset(packet, 0, 100);
+    while(1)
+    {
+        memset(packet, 0, 100);
     
-    long recv_size = recv(sock, packet, 65536, 0);
+        long recv_size = recv(sock, packet, 65536, 0);
 
-    print_arp_reply_packet(packet);
+        if(print_arp_reply_packet(packet) == 1)
+        {
+            break;
+        }
+    }
 
     free(packet);
     close(sock);
