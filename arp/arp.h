@@ -3,12 +3,15 @@
 #include <sys/socket.h>
 #include <linux/if_ether.h>
 #include <linux/if_packet.h>
-#include <linux/if_arp.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/ioctl.h> 
+#include <netinet/in.h>
+#include <unistd.h>
+#include <net/if.h>
+#include <linux/if_arp.h>
 
 typedef struct arph
 {
@@ -150,7 +153,6 @@ arph generate_l3_header(struct ethhdr l2, unsigned char *src_ip, unsigned char *
     return l3;
 }
 
-
 void print_l3_header(arph l3)
 {
     printf("Hardware type : %d\n", ntohs(l3.hdw_type));
@@ -186,11 +188,17 @@ void print_l2_header(struct ethhdr l2)
     printf("L3 proto       : %.2x%.2x\n", l2.h_proto & 0xFF, (l2.h_proto & 0xFF00) >> 8);
 }
 
-void print_arp_reply_packet(void *packet)
+int print_arp_reply_packet(void *packet)
 {
     struct ethhdr *l2 = (struct ethhdr*) packet;
     arph          *l3 = (arph*)(packet + ETHERNET_HEADER_LEN);
-    
-    print_l2_header(*l2);
-    print_l3_header(*l3); 
+
+    if( l3 -> opcode == htons(ARPOP_REPLY) )
+    {
+        print_l2_header(*l2);
+        print_l3_header(*l3);
+        return 1;
+    }
+
+    return 0;
 }
