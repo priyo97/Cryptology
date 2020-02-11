@@ -43,7 +43,7 @@ int main()
     {
         memset(packet, 0, 100);
     
-        long recv_size = recv(sock, packet, 65536, 0);
+        long recv_size = recv(sock, packet, 100, 0);
 
         if(print_arp_reply_packet(packet) == 1)
         {
